@@ -1,0 +1,88 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node src/security/hooks/pre-tool-use.mjs"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node src/security/hooks/post-tool-use.mjs"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node src/security/hooks/agent-stop.mjs"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node src/security/hooks/subagent-stop.mjs"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node src/security/hooks/session-start.mjs"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node src/security/hooks/audit-prompt.mjs"
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(node:*)",
+      "Bash(npm:*)",
+      "Bash(npx:*)",
+      "Bash(tsx:*)",
+      "Read(**)",
+      "Bash(git log:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git branch:*)",
+      "Bash(git checkout:*)"
+    ],
+    "deny": []
+  }
+}
