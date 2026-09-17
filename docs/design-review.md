@@ -22,7 +22,7 @@ Reviewed [docs/architecture.md](./architecture.md) ("Feature Design: EPMCDMETST-
 - **Severity**: Medium
 - **Requirement**: EPMCDMETST-52015
 - **Description**: Architecture references a "catalog index" but never defines the `Book` record shape (fields, types) needed to implement filtering.
-- **Recommendation**: Define an explicit `Book` interface before implementation: `{ id, title, category ('fiction'|'non-fiction'), format, language, publicationDate, averageRating }`. Needed for `bookstore-app/src/catalog/`.
+- **Recommendation**: Define an explicit `Book` interface before implementation: `{ id, title, category ('fiction'|'non-fiction'), format, language, publicationDate, averageRating }`. Needed for `../bookstore-app-claude/src/catalog/`.
 
 ### DR-003: Publication Date filter is relative to request time
 - **Type**: Risk
@@ -36,7 +36,7 @@ Reviewed [docs/architecture.md](./architecture.md) ("Feature Design: EPMCDMETST-
 - **Severity**: Medium
 - **Requirement**: EPMCDMETST-52015
 - **Description**: Architecture doesn't state whether the catalog is in-memory, file-based, or a real database for this build.
-- **Recommendation**: For this capstone scope, use an in-memory catalog (seeded fixture data) in `bookstore-app/src/catalog/`. Sufficient to satisfy the acceptance criteria and keep the app copy-pasteable into a future repo without external DB setup. Needs explicit human sign-off since it constrains future extensibility.
+- **Recommendation**: For this capstone scope, use an in-memory catalog (seeded fixture data) in `../bookstore-app-claude/src/catalog/`. Sufficient to satisfy the acceptance criteria and keep the app copy-pasteable into a future repo without external DB setup. Needs explicit human sign-off since it constrains future extensibility.
 
 ### DR-005: API response schema unspecified
 - **Type**: Gap
@@ -56,7 +56,7 @@ Reviewed [docs/architecture.md](./architecture.md) ("Feature Design: EPMCDMETST-
 - **Type**: Gap
 - **Severity**: Low
 - **Requirement**: EPMCDMETST-52015
-- **Description**: Architecture names a `bookstore-app/tests/` folder but doesn't specify what must be covered.
+- **Description**: Architecture names a `../bookstore-app-claude/tests/` folder but doesn't specify what must be covered.
 - **Recommendation**: Ensure the implementation plan requires unit tests for filter/query-building logic (including the relative-date computation in DR-003) and an integration test for `GET /api/search` covering each acceptance-criteria scenario.
 
 ### DR-008: Clear All Filters doesn't specify clearing persisted state

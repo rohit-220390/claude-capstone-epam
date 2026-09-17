@@ -8,7 +8,7 @@ tools:
   - Bash
   - Glob
   - Grep
-model: claude-opus-4-5
+model: opus
 ---
 
 # Planning Agent

@@ -9,7 +9,7 @@ tools:
   - Glob
   - Grep
   - Agent
-model: Claude Opus 5
+model: opus
 ---
 
 # SDLC Orchestrator Agent
