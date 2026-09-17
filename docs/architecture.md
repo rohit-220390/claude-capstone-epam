@@ -8,7 +8,7 @@ This document describes the system architecture for the Agentic SDLC Documentati
 
 ## Feature Design: EPMCDMETST-52015 — Non‑Fiction Search Filters (Parity with Fiction)
 
-> **Scope note:** This section documents the design for the *bookstore application* referenced by requirement `EPMCDMETST-52015` in [docs/requirements.md](./requirements.md). Per product decision (see Section 9), this application is built inside this repository under `bookstore-app/`, kept independent of the SDLC pipeline's own `src/`/`tests/`, so it can later be copied out into its own repository unmodified.
+> **Scope note:** This section documents the design for the *bookstore application* referenced by requirement `EPMCDMETST-52015` in [docs/requirements.md](./requirements.md). Per product decision (see Section 9), this application lives at `../bookstore-app-claude/` relative to this pipeline repository — a self-contained sibling folder, independent of the SDLC pipeline's own `src/`/`tests/`.
 
 ### 1. System Overview
 
@@ -77,19 +77,19 @@ Both Fiction and Non‑Fiction pages consume the **same** `SearchFiltersPanel` c
 - Customer Reviews filter is a **clickable star-rating control**, not a radio group: clicking the Nth star applies an "N-stars and above" threshold (clicking the 3rd star ⇒ 3★+, clicking the 4th star ⇒ 4★+). Only one threshold is active at a time (clicking a different star replaces the previous selection).
 - Pagination is being introduced fresh as part of this build (no pre-existing pagination to preserve), so it follows standard best practice: page/limit query parameters, filters applied before pagination, page reset to 1 whenever a filter changes.
 
-### 9. Application Location (this repository)
+### 9. Application Location
 
-Since no separate bookstore-application repository exists yet, and per product decision, the actual application implementing this feature will be built **inside this repository** in a new, self-contained top-level folder: `bookstore-app/`.
+The bookstore application implementing `EPMCDMETST-52015` lives at **`../bookstore-app-claude/`** — a sibling folder one level above this pipeline repository (i.e., at `c:\AI_Learning_EPAM\Capstone Projects\bookstore-app-claude\`). It was originally scaffolded inside this repo and then moved out to stand alongside the Copilot-built counterpart (`bookstore-app/`).
 
-- **Folder-naming convention for future requirements**: this repository's `src/`/`tests/` are the SDLC pipeline tool itself, not a target application. Before naming/creating a target-application folder for any requirement, list the repository root first. If the requirement extends the *same* product (bookstore), reuse `bookstore-app/`. If a future requirement is for a **different** product/domain, it must get its own distinctly-named top-level folder — never reuse or overload `bookstore-app/` for an unrelated application. This check was performed for `EPMCDMETST-52015`: the repository root was listed and no application folder existed yet, so `bookstore-app/` was created fresh (confirmed non-colliding).
-- `bookstore-app/` is independent of the SDLC pipeline's `src/`/`tests/` — it has its own `package.json`, `tsconfig.json`, source, and tests, so it can be copied out into its own repository later without modification.
-- Structure (populated during IMPLEMENT):
-  - `bookstore-app/src/catalog/` — book catalog data + Filter Option Catalog config (Fiction/Non‑Fiction filter groups and options).
-  - `bookstore-app/src/search/` — Search Query Builder + filter validation (allow-list) + pagination logic.
-  - `bookstore-app/src/api/` — HTTP API exposing `GET /api/search`.
-  - `bookstore-app/src/web/` — minimal UI (`SearchFiltersPanel`: format/language single-select, date single-select, clickable star-rating control) consuming the API.
-  - `bookstore-app/tests/` — unit/integration tests for filter logic and API.
-- This design is no longer purely illustrative for the parts implemented in `bookstore-app/` — those will be real, tested code. Anything beyond this ticket's scope (e.g., full catalog persistence, auth) remains out of scope and unimplemented.
+- **When implementing changes**: the implementation agent must write all bookstore source and test files under `../bookstore-app-claude/` using paths relative to the Claude Capstone root.
+- **Folder-naming convention for future requirements**: if a future Jira requirement extends the *same* bookstore product, write into `../bookstore-app-claude/`. If it is for a **different** product/domain, create a new distinctly-named sibling folder at the same `Capstone Projects/` level — never overload `../bookstore-app-claude/` with an unrelated application.
+- `../bookstore-app-claude/` is independent of the SDLC pipeline's `src/`/`tests/` — it has its own `package.json`, `tsconfig.json`, source, and tests.
+- Structure:
+  - `../bookstore-app-claude/src/catalog/` — book catalog data + Filter Option Catalog config.
+  - `../bookstore-app-claude/src/search/` — Search Query Builder + filter validation (allow-list) + pagination logic.
+  - `../bookstore-app-claude/src/api/` — HTTP API exposing `GET /api/search`.
+  - `../bookstore-app-claude/src/web/` — minimal UI (`SearchFiltersPanel`) consuming the API.
+  - `../bookstore-app-claude/tests/` — unit/integration tests for filter logic and API.
 
 ### 10. Additional Scenarios — Clear All Filters & Filter Persistence
 
@@ -100,7 +100,7 @@ Since no separate bookstore-application repository exists yet, and per product d
 - No new `ResultsView` logic is needed: its existing `onChange` listener already resets `page` to 1 and calls `refresh()`, which re-queries with the (now empty) filters — satisfying "the original unfiltered results should be displayed".
 
 **Filter State Persistence across refresh**
-- New `FilterStatePort` interface: `save(category, filters): void` and `load(category): SelectedFilters | undefined`, implemented by a `LocalStorageFilterPersistence` adapter in the browser (an in-memory test double is used in `bookstore-app/tests/`).
+- New `FilterStatePort` interface: `save(category, filters): void` and `load(category): SelectedFilters | undefined`, implemented by a `LocalStorageFilterPersistence` adapter in the browser (an in-memory test double is used in `../bookstore-app-claude/tests/`).
 - On construction, the panel's owner hydrates initial state via `load(category)`; on every `onChange` emission, it calls `save(category, filters)`.
 - "Page refresh" is modeled as constructing a fresh `SearchFiltersPanel`/`ResultsView` pair that reads from the same persistence port — this keeps the Search API stateless (no server-side session) and requires no new API contract.
 - Data flow:

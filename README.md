@@ -16,7 +16,7 @@ This is the **Claude Code** equivalent of the GitHub Copilot capstone project. I
 |-------------|-------|
 | [Node.js](https://nodejs.org/) 20.x+ | Matches `@types/node@^20` across `package.json` |
 | [Claude Code](https://claude.ai/code) | Powers the agents, skills, and hooks under `.claude/` |
-| A Jira instance (Cloud or Data Center/Server) | Only needed to exercise the requirement-analysis step; the rest (tests, bookstore-app demo) works without it |
+| A Jira instance (Cloud or Data Center/Server) | Only needed to exercise the requirement-analysis step; the rest (tests) works without it |
 
 ## Quick Start (5 minutes)
 
@@ -35,8 +35,8 @@ If `npm test` passes (12 suites, ~63 tests), the core pipeline tooling is workin
 | Project Instructions | `CLAUDE.md` | Always-on engineering rules for the entire project |
 | Scoped Instructions | `src/CLAUDE.md`, `tests/CLAUDE.md`, `docs/CLAUDE.md`, `src/integrations/CLAUDE.md` | Directory-scoped rules for code quality, testing, documentation, and integrations |
 | Agents | `.claude/agents/*.md` | 10 specialist roles with descriptions Claude uses to route tasks |
-| Skills | `.claude/agents/skill-*.md` | 9 user-invocable domain procedures |
-| Prompts | `.claude/agents/prompt-*.md` | 11 user-invocable task entry points |
+| Skills | `.claude/commands/skills/skill-*.md` | 9 user-invocable domain procedures (slash commands) |
+| Prompts | `.claude/commands/prompts/prompt-*.md` | 11 user-invocable task entry points (slash commands) |
 | Hooks | `.claude/settings.json` hooks section | Deterministic security, validation, and audit controls |
 | MCP | `.mcp.json` | GitHub MCP server for PR creation |
 
@@ -47,8 +47,8 @@ If `npm test` passes (12 suites, ~63 tests), the core pipeline tooling is workin
 | `copilot-instructions.md` | `.github/copilot-instructions.md` | `CLAUDE.md` | `CLAUDE.md` |
 | Scoped instructions | `.github/instructions/*.instructions.md` | Sub-CLAUDE.md files | `src/CLAUDE.md`, `tests/CLAUDE.md`, `docs/CLAUDE.md`, `src/integrations/CLAUDE.md` |
 | Agent definitions | `.github/agents/*.agent.md` | Agent files with frontmatter | `.claude/agents/*.md` |
-| Skill packages | `.github/skills/*/SKILL.md` | User-invocable skill agents | `.claude/agents/skill-*.md` |
-| Prompt files | `.github/prompts/*.prompt.md` | User-invocable prompt agents | `.claude/agents/prompt-*.md` |
+| Skill packages | `.github/skills/*/SKILL.md` | User-invocable skill commands | `.claude/commands/skills/skill-*.md` |
+| Prompt files | `.github/prompts/*.prompt.md` | User-invocable prompt commands | `.claude/commands/prompts/prompt-*.md` |
 | Hook configs (JSON) | `.github/hooks/*.json` | `hooks` section | `.claude/settings.json` |
 | MCP server config | `.vscode/mcp.json` | Project MCP config | `.mcp.json` |
 
@@ -58,7 +58,7 @@ If `npm test` passes (12 suites, ~63 tests), the core pipeline tooling is workin
 
 2. **Agent routing**: Copilot agents list tools by capability type (`execute`, `read`, etc.). Claude agents use a `description` field that Claude reads to decide when to invoke the agent automatically.
 
-3. **Skills and Prompts**: Copilot skills/prompts are separate mechanism types. In Claude Code, both are represented as user-invocable agents in `.claude/agents/` (prefixed `skill-` or `prompt-`).
+3. **Skills and Prompts**: Copilot skills/prompts are separate mechanism types with their own directories. In Claude Code, both are implemented as user-invocable slash commands under `.claude/commands/`, organized in sub-directories: skills go in `.claude/commands/skills/` (invoked as `/skills/skill-name`) and prompts go in `.claude/commands/prompts/` (invoked as `/prompts/prompt-name`).
 
 4. **Hooks**: Copilot uses three separate JSON hook config files (`security.json`, `validation.json`, `audit.json`). Claude Code consolidates all hooks into `.claude/settings.json` under a single `hooks` object, with event names mapped as: `preToolUse` → `PreToolUse`, `postToolUse` → `PostToolUse`, `agentStop` → `Stop`, `subagentStop` → `SubagentStop`, `sessionStart` → `SessionStart`, `userPromptSubmitted` → `UserPromptSubmit`.
 
@@ -70,7 +70,10 @@ If `npm test` passes (12 suites, ~63 tests), the core pipeline tooling is workin
 
 ```
 .claude/
-  agents/        10 agent definitions + 9 skills + 11 prompts (all .md with frontmatter)
+  agents/        10 specialist agent definitions (all .md with frontmatter)
+  commands/
+    skills/      9 user-invocable skill commands (prefixed skill-*)
+    prompts/     11 user-invocable prompt commands (prefixed prompt-*)
   settings.json  Hooks (security, validation, audit) + permissions allowlist
 .mcp.json        GitHub MCP server configuration
 CLAUDE.md        Primary project instructions (always applied)
@@ -85,7 +88,6 @@ src/
   validation/    Documentation quality checks
   security/      Secret scanning, log redaction, tool policy, hook scripts
 tests/           unit, integration, and security test suites
-bookstore-app/   Sample product built by the pipeline — self-contained, own package.json/tests
 ```
 
 ## Setup
@@ -111,12 +113,12 @@ bookstore-app/   Sample product built by the pipeline — self-contained, own pa
 | `npm run secret-scan` | Scan the repository for credential patterns |
 | `npx tsx src/requirement/analyze-requirement-cli.ts --source jira --id <KEY>` | Fetch, normalize, diff, and write a requirement to `docs/requirements.md` |
 
-## Demo (bookstore-app)
+## Demo (bookstore-app-claude)
 
-The `bookstore-app/` folder is the actual feature (`EPMCDMETST-52015`, Non-Fiction search filters) built by the pipeline:
+The bookstore application (`EPMCDMETST-52015`, Non-Fiction search filters) was built by this pipeline and lives as a standalone project alongside this repo:
 
 ```bash
-cd bookstore-app
+cd ../bookstore-app-claude
 npm install
 npm test
 npm start   # starts the search API + UI on http://localhost:3000

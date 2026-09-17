@@ -38,6 +38,29 @@ Each finding must include:
 - **Recommendation**: Proposed resolution
 - **Requirement Reference**: Source requirement ID
 
-## Skills
+## Procedure
 
-- Use `skill-design-review` for review process, finding categories, and severity levels
+### Review Process
+
+1. Read `docs/requirements.md` to understand what must be built.
+2. Read `docs/architecture.md` to understand the proposed design.
+3. For each requirement, verify the architecture addresses it.
+4. Identify risks, gaps, and decisions needing resolution.
+5. Produce `docs/design-review.md` with categorized findings.
+
+### Finding Categories
+
+| Type | Description |
+|------|-------------|
+| **Risk** | Something that could go wrong. Has likelihood and impact. |
+| **Gap** | A requirement not addressed by the architecture. |
+| **Decision** | A design choice that needs explicit human approval. |
+
+### Severity Levels
+
+- **Blocking** — Must be resolved before implementation can proceed.
+- **High** — Should be resolved before implementation; workaround possible.
+- **Medium** — Should be addressed but does not block progress.
+- **Low** — Nice to have; can be deferred.
+
+Review all requirements, not just the changed ones. Flag missing error handling, security gaps, and scalability concerns. Do not approve architecture that has Blocking findings.
